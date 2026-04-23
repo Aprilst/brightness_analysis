@@ -15,7 +15,7 @@ from openpyxl.utils import get_column_letter
 import warnings
 warnings.filterwarnings('ignore')
 
-SN_PATTERN = re.compile(r'^\d{10,15}$')
+SN_PATTERN = re.compile(r'^\d{10,15}(?:\s+.*)?$')
 IMAGE_PATTERN = re.compile(r'^(left|right)(?:_e(\d+))?_p(\d+)\.png$', re.IGNORECASE)
 OVEREXPOSURE_THRESHOLD = 255
 
@@ -381,7 +381,12 @@ def main():
         messagebox.showerror("错误", "未处理任何有效数据")
         return
     
-    output_path = os.path.join(selected_path, 'results.xlsx')
+    if len(all_results) == 1:
+        sn_folder = list(all_results.keys())[0]
+        sn_code = os.path.basename(sn_folder).split()[0]
+        output_path = os.path.join(selected_path, f'result_{sn_code}.xlsx')
+    else:
+        output_path = os.path.join(selected_path, 'results.xlsx')
     save_results_to_excel(all_results, output_path)
     
     messagebox.showinfo("完成", f"分析完成!\n结果已保存到:\n{output_path}")
